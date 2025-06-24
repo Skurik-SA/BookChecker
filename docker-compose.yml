@@ -1,4 +1,3 @@
-
 services:
   db:
     image: postgres:latest
@@ -6,23 +5,39 @@ services:
       - .env.prod      # для prod; в dev этот параметр переопределим
     volumes:
       - db_data:/var/lib/postgresql/data
+    # 1. Политика перезапуска
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   web:
     build:
       context: .
       dockerfile: Dockerfile
     env_file:
       - .env.prod
-    environment:
-      - ENV=prod
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/mediafiles
     command: >
       sh -c "
         python manage.py migrate &&
-        gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+        gunicorn backend.wsgi:application -c gunicorn.conf.py
       "
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   db_data:
+    external: true
+  static_volume:
+    external: true
+  media_volume:
+    external: true
