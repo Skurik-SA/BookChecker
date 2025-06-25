@@ -1,4 +1,3 @@
-````markdown
 # BookChecker Backend
 
 Для запуска
@@ -24,7 +23,7 @@ DB_PORT=5432
 
 YANDEX_SECRET=секретный ключ для яндекса
 YANDEX_CLIENT_ID=ключ для пользователя
-````
+```
 
 ### .env.prod
 
