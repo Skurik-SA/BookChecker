@@ -4,6 +4,7 @@ from allauth.socialaccount.providers.yandex.views import YandexOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,6 +16,18 @@ from .serializers import CustomTokenObtainPairSerializer
 
 User = get_user_model()
 
+
+@extend_schema_view(
+    post=extend_schema(
+        summary="Регистрация пользователя",
+        description=(
+            "Создать нового пользователя. "
+            "Требуется передать поля: username, email, password"
+            " (password должен быть не менее 8 символов). "
+            " После регистрации пользователь не будет автоматически аутентифицирован."
+        )
+    ),
+)
 class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -26,10 +39,32 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema_view(
+    get=extend_schema(
+        summary="Получить токены JWT",
+        description=(
+            "Получить JWT-токены (refresh и access) для аутентификации. "
+            "Требуется передать поля: username/email и password. "
+            "Если пользователь успешно аутентифицирован, вернутся токены."
+        )
+    ),
+)
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
+@extend_schema_view(
+    post=extend_schema(
+        summary="Вход через Яндекс OAuth2",
+        description=(
+            "Обменять код авторизации на access_token и получить информацию о пользователе. "
+            "Требуется передать поля: code (полученный от Яндекса) и redirect_uri (URL, "
+            "на который Яндекс перенаправил после авторизации). "
+            "Если пользователь с таким email уже существует, будет возвращён его JWT-токен, "
+            "иначе будет создан новый пользователь."
+        )
+    ),
+)
 class YandexOAuth2View(APIView):
     """
     Обменивает code → access_token у Яндекса, получает инфо о пользователе,

@@ -18,8 +18,8 @@ services:
       - .env.dev
     volumes:
       - ./:/app           # монтируем код для hot-reload
-      - static_volume:/app/staticfiles
-      - media_volume:/app/mediafiles
+      - ./mediafiles/:/app/mediafiles        # вместо external-тома
+      - ./staticfiles/:/app/staticfiles
     ports:
       - "8000:8000"
     depends_on:
@@ -36,7 +36,7 @@ services:
 volumes:
   db_dev_data:
     external: true
-  static_volume:
-    external: true
-  media_volume:
-    external: true
+#  static_volume:
+#    external: true
+#  media_volume:
+#    external: true

@@ -60,12 +60,14 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.vk',
     'allauth.socialaccount.providers.yandex',
 
-    # dj-rest-auth
     'dj_rest_auth',
     'dj_rest_auth.registration',
 
-    'accounts',
-    'books',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
+
+    'accounts.apps.AccountsConfig',
+    'books.apps.BooksConfig',
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -241,9 +243,22 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
 }
 
 REST_USE_JWT = True
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'BookChecker API',
+    'DESCRIPTION': 'Документация REST API для BookChecker',
+    'VERSION': '1.0.0',
+    # опционально: пагинация, securitySchemes и т.п.
+}
