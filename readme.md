@@ -41,8 +41,15 @@ YANDEX_CLIENT_ID=ключ для пользователя
    ```
 
 2. Убедиться, что `.env.dev` присутствует и заполнен.
+3. Перед запуском контейнеров создать volume для БД, media и статики:
 
-3. Запустить контейнеры:
+    ```bash
+       docker volume create db_dev_data
+       docker volume create static_volume
+       docker volume create media_volume
+    ```
+
+4. Запустить контейнеры:
 
    ```bash
    docker-compose up -d
