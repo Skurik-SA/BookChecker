@@ -37,7 +37,7 @@ services:
 volumes:
   db_data:
     external: true
-  static_volume:
-    external: true
-  media_volume:
-    external: true
+#  static_volume:
+#    external: true
+#  media_volume:
+#    external: true
